@@ -37,7 +37,7 @@ float teapotZ = 25.0f; // initial Z position
 float ctrlPoints[4][4][3];
 GLUnurbsObj* theNurb;
 
-GLuint	texture[2];	//gambar loader
+GLuint	texture[3];	//gambar loader
 //******************************************************
 // Awal kode yang diambil dari bukunya Suyoto
 
@@ -105,7 +105,7 @@ int LoadGLTextures()
 {
     int Status = FALSE;									
 
-    AUX_RGBImageRec *TextureImage[2];
+    AUX_RGBImageRec *TextureImage[3];
 
     memset(TextureImage, 0, sizeof(void *) * 2); 
 
@@ -133,8 +133,18 @@ int LoadGLTextures()
         }
     }
 
+    if (TextureImage[2] = LoadBMP("GUAMBAR.bmp")) // 256x256
+    {
+        glBindTexture(GL_TEXTURE_2D, texture[2]);
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[2]->sizeX, TextureImage[2]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[2]->data);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+
+
+
     // Clean up texture image memory
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 3; i++)
     {
         if (TextureImage[i])
         {
@@ -208,6 +218,34 @@ void gambarDinding() {
 
     glColor3f(1.0f, 1.0f, 1.0f); // Reset color (optional)
 }
+
+void gambarFrame() {
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture[2]); 
+
+    glDisable(GL_TEXTURE_2D);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glBegin(GL_QUADS);
+        glVertex3f(-2.1f, 3.9f, -9.98f);
+        glVertex3f( 2.1f, 3.9f, -9.98f);
+        glVertex3f( 2.1f, 6.1f, -9.98f);
+        glVertex3f(-2.1f, 6.1f, -9.98f);
+    glEnd();
+
+    // Draw the actual picture (with texture)
+    glEnable(GL_TEXTURE_2D);
+    glColor3f(1,1,1); // White for true texture color
+    glBindTexture(GL_TEXTURE_2D, texture[2]);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0, 0); glVertex3f(-2.0f, 4.0f, -9.97f); // Bottom-left
+        glTexCoord2f(1, 0); glVertex3f( 2.0f, 4.0f, -9.97f); // Bottom-right
+        glTexCoord2f(1, 1); glVertex3f( 2.0f, 6.0f, -9.97f); // Top-right
+        glTexCoord2f(0, 1); glVertex3f(-2.0f, 6.0f, -9.97f); // Top-left
+    glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+}
+
 
 void gambarDindingKiri() {
     glDisable(GL_TEXTURE_2D);
@@ -731,22 +769,18 @@ WinMain (HINSTANCE hInstance,
                     glPopMatrix( ); 
             			
             		glCullFace(GL_BACK);
-					// glDisable(GL_NORMALIZE);
 					glDisable(GL_CULL_FACE);
 					
             	glPopMatrix();
 
                 glPushMatrix();
-                    gambarDinding();       // Back wall
-                    gambarDindingKiri();   // Left wall
-                    gambarDindingKanan();  // Right wall
+                    gambarDinding();      
+                    gambarDindingKiri();  
+                    gambarDindingKanan(); 
                 glPopMatrix();
             	
             	glPushMatrix( );
-	                	//posisi cahaya dikembalikan ke posisi semula
 	            	glLightfv(GL_LIGHT0, GL_POSITION, posisiCahaya);
-	            
-	            	// gambar bagian atas lantai
 	            	glEnable(GL_BLEND);
 	            	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	            	glColor4f(0.2f, 0.2f, 0.4f, 0.8f);
@@ -769,6 +803,11 @@ WinMain (HINSTANCE hInstance,
                    glTranslatef(0.0f, 0.0f, 0.0f);
                    gambarBox();
                glPopMatrix();
+
+               glPushMatrix();
+                    glTranslatef(0.0f, 0.0f, 1.0f);
+                    gambarFrame();
+                glPopMatrix();
                 
 
                 glMaterialfv(GL_FRONT,GL_AMBIENT, bahan_ambient);
