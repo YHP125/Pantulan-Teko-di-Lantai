@@ -110,7 +110,7 @@ int LoadGLTextures()
     memset(TextureImage, 0, sizeof(void *) * 2); 
 
     // Load first texture
-    if (TextureImage[0] = LoadBMP("GUAMBAR.bmp")) // 256x256
+    if (TextureImage[0] = LoadBMP("pink.bmp")) // 256x256
     {
         // Load second texture
         if (TextureImage[1] = LoadBMP("MOMO.bmp")) // another BMP file
