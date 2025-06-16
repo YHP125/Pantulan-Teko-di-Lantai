@@ -246,13 +246,14 @@ void gambarDindingKanan() {
 void gambarBox() {
     glPushMatrix();
     glDisable(GL_TEXTURE_2D);
-    glColor3f(0.7f, 0.5f, 0.2f); // Brownish color
 
     float xMin = -2.5f, xMax = 2.5f;   // width 6
     float yMin = 0.0f, yMax = 1.0f;    // height 1
     float zMin = 8.0f, zMax = 12.0f;   // depth 4
 
-    // Top face
+    // Top face (DIFFERENT COLOR, e.g., RED)
+    glDisable(GL_LIGHTING);
+    glColor3f(1.0f, 0.0f, 0.0f); // Red
     glBegin(GL_QUADS);
         glNormal3f(0, 1, 0);
         glVertex3f(xMin, yMax, zMin);
@@ -260,6 +261,10 @@ void gambarBox() {
         glVertex3f(xMax, yMax, zMax);
         glVertex3f(xMin, yMax, zMax);
     glEnd();
+    glEnable(GL_LIGHTING);
+
+    // Reset color for the other faces
+    glColor3f(0.7f, 0.5f, 0.2f); // Brownish color
 
     // Bottom face
     glBegin(GL_QUADS);
@@ -314,11 +319,12 @@ void gambarBox() {
 
 
 
+
 void Inisialisasi(int lebar, int tinggi)
 {
 	glViewport (0, 0, lebar, tinggi); 
 	
-    glClearColor(1.0, 1.0, 1.0, 0.0);
+    glClearColor(0.941, 0.306, 0.545, 1.0);
     glClearAccum(0.0, 0.0, 0.0, 0.0);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
@@ -540,7 +546,7 @@ WinMain (HINSTANCE hInstance,
 
 	GLfloat    bahan_ambient2[ ]= {0.0f, 1.0f, 0.0f, 1.0f};
 	GLfloat    bahan_diffuse2[ ] = {0.0f, 1.0f, 0.0f, 1.0f};
-	GLfloat    bahan_specular2[ ] = {0.0f, 1.0f, 0.0f, 1.0f};
+	GLfloat    bahan_specular2[ ] = {1.0f, 1.0f, 1.0f, 1.0f};
 	GLfloat    bahan_shininess2[ ] = {90.0f};
 	
     GLfloat    bahan_ambient3[ ]= {1.0f, 1.0f, 1.0f, 1.0f};
@@ -611,8 +617,8 @@ WinMain (HINSTANCE hInstance,
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             gluLookAt(
-                0.0, 1.0, 8.0,   // Eye position (camera)
-                0.0, 1.0, 0.0,    // Look-at target (center of scene)
+                0.0, 3.0, 4.0,   // Eye position (camera)
+                0.0, 1.2, -4.0,    // Look-at target (center of scene)
                 0.0, 1.0, 0.0     // Up vector
             );
 
@@ -642,45 +648,66 @@ WinMain (HINSTANCE hInstance,
 			        //******************************************************
 			        // Awal kode yang diambil dari bukunya Suyoto
 			        glMaterialfv(GL_FRONT,GL_AMBIENT, bahan_ambient);
-                    glMaterialfv(GL_FRONT, GL_DIFFUSE, bahan_diffuse);
-                    glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular);
-                    glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess);
-                    glPushMatrix();
-                        glTranslatef(-4.0, yBoxTop + 0.1, 0.0); // +0.1 to avoid z-fighting
-                        glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
-                        glutSolidTeapot(0.7f);
-                    glPopMatrix();
-
-                    glMaterialfv(GL_FRONT,GL_AMBIENT, bahan_ambient1);
-                    glMaterialfv(GL_FRONT, GL_DIFFUSE, bahan_diffuse1);
-                    glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular1);
-                    glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess1);
-                    glPushMatrix();
-                        glTranslatef(1.0, yBoxTop + 0.2, 0.0);
-                        glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
-                        glutSolidTorus(0.7f, 1.0f, 200, 200);
-                    glPopMatrix();
-
-                    glMaterialfv(GL_FRONT, GL_AMBIENT, bahan_ambient2);
-                    glMaterialfv(GL_FRONT, GL_DIFFUSE, bahan_diffuse2);
-                    glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular2);
-                    glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess2);
-                    glPushMatrix();
-                        glTranslatef(-2.0f, yBoxTop + 0.2f, 2.0f); // Adjust z if needed
-                        glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
-                        glutSolidSphere(1.4f, 200, 200);
-                    glPopMatrix();
-
-                    glMaterialfv(GL_FRONT, GL_AMBIENT, bahan_ambient3);
-                    glMaterialfv(GL_FRONT, GL_DIFFUSE, bahan_diffuse3);
-                    glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular3);
-                    glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess3);
-                    glPushMatrix();
-                        glTranslatef(5.0f, yBoxTop + 0.2f, -4.0f); // Adjust z if needed
-                        glScalef(2.0f, 2.0f, 2.0f);
-                        glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
-                        kubusTekstur();
-                    glPopMatrix();
+	                glMaterialfv(GL_FRONT, GL_DIFFUSE, bahan_diffuse);
+	                glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular);
+	                glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess);
+	                glPushMatrix();
+	                    glTranslatef(-2.0, 0.0, 11.0f);
+	                    glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
+	                    glutSolidTeapot(0.7f);
+	                glPopMatrix();
+	                glMaterialfv(GL_FRONT,GL_AMBIENT, bahan_ambient1);
+	                glMaterialfv(GL_FRONT, GL_DIFFUSE, bahan_diffuse1);
+	                glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular1);
+	                glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess1);
+	                glPushMatrix();
+						glTranslatef(-0.4, 0.0, 11.0f);
+	                    glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
+	                    glScalef(0.35f, 0.35f, 0.35f);
+	                    glutSolidTorus(0.7f, 1.0f, 200, 200);
+	                glPopMatrix();
+	
+	                glMaterialfv(GL_FRONT, GL_AMBIENT, bahan_ambient2);
+	                glMaterialfv(GL_FRONT, GL_DIFFUSE, bahan_diffuse2);
+	                glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular2);
+	                glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess2);
+	                glPushMatrix();
+	                    glTranslatef(0.8f, 0.0, 11.0f);
+	                    glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
+	                    glutSolidSphere(0.6f, 200, 200);
+	                glPopMatrix();
+	
+	                glMaterialfv(GL_FRONT, GL_AMBIENT, bahan_ambient3);
+	                glMaterialfv(GL_FRONT, GL_DIFFUSE, bahan_diffuse3);
+	                glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular3);
+	                glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess3);
+	                glPushMatrix();
+	                    glTranslatef(2.0f, 0.0, 11.0f);
+	                    glScalef(0.5f, 0.5f, 0.5f);
+	                    glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
+	                    kubusTekstur();
+	                glPopMatrix();
+	
+	                glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+	                    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient);
+	                    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse);
+	                    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
+	                    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
+	                    glPushMatrix( );
+	                        glTranslatef (-6.0f, 0.0f, 14.0f);
+	                        glScalef(1.0f, 1.0f, 1.0f);
+	                        display();
+	                    glPopMatrix( ); 
+	                    glPushMatrix( );
+	                        glTranslatef (-6.0f, 0.0f, 16.0f);
+	                        glScalef(1.0f, 1.0f, 1.0f);
+	                        display();
+	                    glPopMatrix( ); 
+	                    glPushMatrix( );
+	                        glTranslatef (-6.0f, 0.0f, 18.0f);
+	                        glScalef(1.0f, 1.0f, 1.0f);
+	                        display();
+	                    glPopMatrix( ); 
 
                     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
                     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient);
@@ -704,7 +731,7 @@ WinMain (HINSTANCE hInstance,
                     glPopMatrix( ); 
             			
             		glCullFace(GL_BACK);
-					glDisable(GL_NORMALIZE);
+					// glDisable(GL_NORMALIZE);
 					glDisable(GL_CULL_FACE);
 					
             	glPopMatrix();
@@ -737,15 +764,11 @@ WinMain (HINSTANCE hInstance,
 					glDisable(GL_BLEND);
 				glPopMatrix();
 
-                
-            
-                
-
             	// gambar objek aslinya, tidak pantulannya
-                glPushMatrix();
-                    glTranslatef(0.0f, 0.0f, 10.0f);
-                    gambarBox();
-                glPopMatrix();
+               glPushMatrix();
+                   glTranslatef(0.0f, 0.0f, 0.0f);
+                   gambarBox();
+               glPopMatrix();
                 
 
                 glMaterialfv(GL_FRONT,GL_AMBIENT, bahan_ambient);
@@ -753,8 +776,7 @@ WinMain (HINSTANCE hInstance,
                 glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular);
                 glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess);
                 glPushMatrix();
-                // W AND S here
-                    glTranslatef(-2.0, yBoxTop + 0.1, teapotZ); // +0.1 to avoid z-fighting
+                    glTranslatef(-2.0, 1.6, 11.0f);
                     glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
                     glutSolidTeapot(0.7f);
                 glPopMatrix();
@@ -763,8 +785,9 @@ WinMain (HINSTANCE hInstance,
                 glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular1);
                 glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess1);
                 glPushMatrix();
-                    glTranslatef(1.0, yBoxTop + 0.2, 0.0);
+					glTranslatef(-0.4, 1.65, 11.0f);
                     glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
+                    glScalef(0.35f, 0.35f, 0.35f);
                     glutSolidTorus(0.7f, 1.0f, 200, 200);
                 glPopMatrix();
 
@@ -773,9 +796,9 @@ WinMain (HINSTANCE hInstance,
                 glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular2);
                 glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess2);
                 glPushMatrix();
-                    glTranslatef(-2.0f, yBoxTop + 0.2f, 2.0f); // Adjust z if needed
+                    glTranslatef(0.8f, 1.65, 11.0f);
                     glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
-                    glutSolidSphere(1.4f, 200, 200);
+                    glutSolidSphere(0.6f, 200, 200);
                 glPopMatrix();
 
                 glMaterialfv(GL_FRONT, GL_AMBIENT, bahan_ambient3);
@@ -783,8 +806,8 @@ WinMain (HINSTANCE hInstance,
                 glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular3);
                 glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess3);
                 glPushMatrix();
-                    glTranslatef(5.0f, yBoxTop + 0.2f, -4.0f); // Adjust z if needed
-                    glScalef(2.0f, 2.0f, 2.0f);
+                    glTranslatef(2.0f, 1.65, 11.0f);
+                    glScalef(0.5f, 0.5f, 0.5f);
                     glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
                     kubusTekstur();
                 glPopMatrix();
