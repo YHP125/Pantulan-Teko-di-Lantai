@@ -256,50 +256,120 @@ void gambarBox() {
 
 void gambarTV() {
     glPushMatrix();
-    glDisable(GL_TEXTURE_2D);
-    float xMin = 8.0f, xMax = 10.0f;  // Positioned on the right side
-    float yMin = 0.0f, yMax = 3.0f;   // Height of 3 units
-    float zMin = 10.0f, zMax = 10.5f; // Thin depth
-    // Screen (black)
+    
+    // TV dimensions
+    float xMin = 8.0f, xMax = 10.0f;  // Width
+    float yMin = 0.0f, yMax = 3.0f;   // Height
+    float zMin = 10.0f, zMax = 10.5f; // Depth
+    
+    // Screen with texture
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture[1]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glDisable(GL_LIGHTING);
-    glColor3f(0.1f, 0.1f, 0.1f);
+    glColor3f(1.0f, 1.0f, 1.0f); // Full texture color
     glBegin(GL_QUADS);
-        glNormal3f(0, 0, 1);
-        glVertex3f(xMin, yMin, zMax);
-        glVertex3f(xMax, yMin, zMax);
-        glVertex3f(xMax, yMax, zMax);
-        glVertex3f(xMin, yMax, zMax);
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(xMin + 0.1f, yMin + 0.1f, zMax);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(xMax - 0.1f, yMin + 0.1f, zMax);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(xMax - 0.1f, yMax - 0.1f, zMax);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(xMin + 0.1f, yMax - 0.1f, zMax);
     glEnd();
+    glDisable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
-    // Frame (silver)
-    glColor3f(0.8f, 0.8f, 0.8f);
+    
+    // Frame with metallic material
+    GLfloat frame_ambient[] = {0.4f, 0.4f, 0.4f, 1.0f};
+    GLfloat frame_diffuse[] = {0.7f, 0.7f, 0.7f, 1.0f};
+    GLfloat frame_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat frame_shininess[] = {100.0f};
+    glMaterialfv(GL_FRONT, GL_AMBIENT, frame_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, frame_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, frame_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, frame_shininess);
+    
     glBegin(GL_QUADS);
-        glNormal3f(0, -1, 0);
+        // Bottom frame
+        glNormal3f(0.0f, -1.0f, 0.0f);
         glVertex3f(xMin, yMin, zMin);
         glVertex3f(xMax, yMin, zMin);
         glVertex3f(xMax, yMin, zMax);
         glVertex3f(xMin, yMin, zMax);
-        glNormal3f(0, 0, -1);
-        glVertex3f(xMin, yMin, zMin);
-        glVertex3f(xMax, yMin, zMin);
-        glVertex3f(xMax, yMax, zMin);
+        // Top frame
+        glNormal3f(0.0f, 1.0f, 0.0f);
         glVertex3f(xMin, yMax, zMin);
-        glNormal3f(-1, 0, 0);
+        glVertex3f(xMax, yMax, zMin);
+        glVertex3f(xMax, yMax, zMax);
+        glVertex3f(xMin, yMax, zMax);
+        // Left frame
+        glNormal3f(-1.0f, 0.0f, 0.0f);
         glVertex3f(xMin, yMin, zMin);
         glVertex3f(xMin, yMin, zMax);
         glVertex3f(xMin, yMax, zMax);
         glVertex3f(xMin, yMax, zMin);
-        glNormal3f(1, 0, 0);
+        // Right frame
+        glNormal3f(1.0f, 0.0f, 0.0f);
         glVertex3f(xMax, yMin, zMin);
         glVertex3f(xMax, yMin, zMax);
         glVertex3f(xMax, yMax, zMax);
         glVertex3f(xMax, yMax, zMin);
-        glNormal3f(0, 1, 0);
-        glVertex3f(xMin, yMax, zMin);
+        // Back panel
+        glNormal3f(0.0f, 0.0f, -1.0f);
+        glVertex3f(xMin, yMin, zMin);
+        glVertex3f(xMax, yMin, zMin);
         glVertex3f(xMax, yMax, zMin);
-        glVertex3f(xMax, yMax, zMax);
-        glVertex3f(xMin, yMax, zMax);
+        glVertex3f(xMin, yMax, zMin);
     glEnd();
+    
+    // Stand
+    float standWidth = 0.5f;
+    float standHeight = 0.2f;
+    float standDepth = 0.5f;
+    float standX = (xMin + xMax) / 2.0f - standWidth / 2.0f;
+    float standY = yMin - standHeight;
+    float standZ = zMin;
+    
+    glBegin(GL_QUADS);
+        // Top of stand
+        glNormal3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(standX, standY + standHeight, standZ);
+        glVertex3f(standX + standWidth, standY + standHeight, standZ);
+        glVertex3f(standX + standWidth, standY + standHeight, standZ + standDepth);
+        glVertex3f(standX, standY + standHeight, standZ + standDepth);
+        // Bottom of stand
+        glNormal3f(0.0f, -1.0f, 0.0f);
+        glVertex3f(standX, standY, standZ);
+        glVertex3f(standX + standWidth, standY, standZ);
+        glVertex3f(standX + standWidth, standY, standZ + standDepth);
+        glVertex3f(standX, standY, standZ + standDepth);
+        // Front of stand
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(standX, standY, standZ + standDepth);
+        glVertex3f(standX + standWidth, standY, standZ + standDepth);
+        glVertex3f(standX + standWidth, standY + standHeight, standZ + standDepth);
+        glVertex3f(standX, standY + standHeight, standZ + standDepth);
+        // Back of stand
+        glNormal3f(0.0f, 0.0f, -1.0f);
+        glVertex3f(standX, standY, standZ);
+        glVertex3f(standX + standWidth, standY, standZ);
+        glVertex3f(standX + standWidth, standY + standHeight, standZ);
+        glVertex3f(standX, standY + standHeight, standZ);
+        // Left of stand
+        glNormal3f(-1.0f, 0.0f, 0.0f);
+        glVertex3f(standX, standY, standZ);
+        glVertex3f(standX, standY, standZ + standDepth);
+        glVertex3f(standX, standY + standHeight, standZ + standDepth);
+        glVertex3f(standX, standY + standHeight, standZ);
+        // Right of stand
+        glNormal3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(standX + standWidth, standY, standZ);
+        glVertex3f(standX + standWidth, standY, standZ + standDepth);
+        glVertex3f(standX + standWidth, standY + standHeight, standZ + standDepth);
+        glVertex3f(standX + standWidth, standY + standHeight, standZ);
+    glEnd();
+    
+    // Reset material properties
     glColor3f(1.0f, 1.0f, 1.0f);
     glPopMatrix();
 }
