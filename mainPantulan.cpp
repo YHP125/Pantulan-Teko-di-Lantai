@@ -37,7 +37,7 @@ float teapotZ = 25.0f; // initial Z position
 float ctrlPoints[4][4][3];
 GLUnurbsObj* theNurb;
 
-GLuint	texture[3];	//gambar loader
+GLuint	texture[4];	//gambar loader
 //******************************************************
 // Awal kode yang diambil dari bukunya Suyoto
 
@@ -105,7 +105,7 @@ int LoadGLTextures()
 {
     int Status = FALSE;									
 
-    AUX_RGBImageRec *TextureImage[3];
+    AUX_RGBImageRec *TextureImage[4];
 
     memset(TextureImage, 0, sizeof(void *) * 2); 
 
@@ -117,7 +117,7 @@ int LoadGLTextures()
         {
             Status = TRUE;
 
-            glGenTextures(2, &texture[0]); // Generate 2 texture
+            glGenTextures(4, &texture[0]); // Generate 2 texture
 
             // Texture 1
             glBindTexture(GL_TEXTURE_2D, texture[0]);
@@ -133,7 +133,7 @@ int LoadGLTextures()
         }
     }
 
-    if (TextureImage[2] = LoadBMP("GUAMBAR.bmp")) // 256x256
+    if (TextureImage[2] = LoadBMP("framesadas.bmp")) // 256x256
     {
         glBindTexture(GL_TEXTURE_2D, texture[2]);
         glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[2]->sizeX, TextureImage[2]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[2]->data);
@@ -141,10 +141,18 @@ int LoadGLTextures()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
+    if (TextureImage[3] = LoadBMP("tekstur_muka_tv.bmp")) // 256x256
+    {
+        glBindTexture(GL_TEXTURE_2D, texture[3]);
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[3]->sizeX, TextureImage[3]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[3]->data);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+
 
 
     // Clean up texture image memory
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
     {
         if (TextureImage[i])
         {
@@ -155,6 +163,126 @@ int LoadGLTextures()
     }
 
     return Status;
+}
+
+void gambarTV() {
+    glPushMatrix();
+    
+    // TV dimensions
+    float xMin = 8.0f, xMax = 10.0f;  // Width
+    float yMin = 0.0f, yMax = 3.0f;   // Height
+    float zMin = 10.0f, zMax = 10.5f; // Depth
+    
+    // Screen with texture
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture[3]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glDisable(GL_LIGHTING);
+    glColor3f(1.0f, 1.0f, 1.0f); // Full texture color
+    glBegin(GL_QUADS);
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(xMin + 0.1f, yMin + 0.1f, zMax);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(xMax - 0.1f, yMin + 0.1f, zMax);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(xMax - 0.1f, yMax - 0.1f, zMax);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(xMin + 0.1f, yMax - 0.1f, zMax);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+    
+    // Frame with metallic material
+    GLfloat frame_ambient[] = {0.4f, 0.4f, 0.4f, 1.0f};
+    GLfloat frame_diffuse[] = {0.7f, 0.7f, 0.7f, 1.0f};
+    GLfloat frame_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat frame_shininess[] = {100.0f};
+    glMaterialfv(GL_FRONT, GL_AMBIENT, frame_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, frame_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, frame_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, frame_shininess);
+    
+    glBegin(GL_QUADS);
+        // Bottom frame
+        glNormal3f(0.0f, -1.0f, 0.0f);
+        glVertex3f(xMin, yMin, zMin);
+        glVertex3f(xMax, yMin, zMin);
+        glVertex3f(xMax, yMin, zMax);
+        glVertex3f(xMin, yMin, zMax);
+        // Top frame
+        glNormal3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(xMin, yMax, zMin);
+        glVertex3f(xMax, yMax, zMin);
+        glVertex3f(xMax, yMax, zMax);
+        glVertex3f(xMin, yMax, zMax);
+        // Left frame
+        glNormal3f(-1.0f, 0.0f, 0.0f);
+        glVertex3f(xMin, yMin, zMin);
+        glVertex3f(xMin, yMin, zMax);
+        glVertex3f(xMin, yMax, zMax);
+        glVertex3f(xMin, yMax, zMin);
+        // Right frame
+        glNormal3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(xMax, yMin, zMin);
+        glVertex3f(xMax, yMin, zMax);
+        glVertex3f(xMax, yMax, zMax);
+        glVertex3f(xMax, yMax, zMin);
+        // Back panel
+        glNormal3f(0.0f, 0.0f, -1.0f);
+        glVertex3f(xMin, yMin, zMin);
+        glVertex3f(xMax, yMin, zMin);
+        glVertex3f(xMax, yMax, zMin);
+        glVertex3f(xMin, yMax, zMin);
+    glEnd();
+    
+    // Stand
+    float standWidth = 0.5f;
+    float standHeight = 0.2f;
+    float standDepth = 0.5f;
+    float standX = (xMin + xMax) / 2.0f - standWidth / 2.0f;
+    float standY = yMin - standHeight;
+    float standZ = zMin;
+    
+    glBegin(GL_QUADS);
+        // Top of stand
+        glNormal3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(standX, standY + standHeight, standZ);
+        glVertex3f(standX + standWidth, standY + standHeight, standZ);
+        glVertex3f(standX + standWidth, standY + standHeight, standZ + standDepth);
+        glVertex3f(standX, standY + standHeight, standZ + standDepth);
+        // Bottom of stand
+        glNormal3f(0.0f, -1.0f, 0.0f);
+        glVertex3f(standX, standY, standZ);
+        glVertex3f(standX + standWidth, standY, standZ);
+        glVertex3f(standX + standWidth, standY, standZ + standDepth);
+        glVertex3f(standX, standY, standZ + standDepth);
+        // Front of stand
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(standX, standY, standZ + standDepth);
+        glVertex3f(standX + standWidth, standY, standZ + standDepth);
+        glVertex3f(standX + standWidth, standY + standHeight, standZ + standDepth);
+        glVertex3f(standX, standY + standHeight, standZ + standDepth);
+        // Back of stand
+        glNormal3f(0.0f, 0.0f, -1.0f);
+        glVertex3f(standX, standY, standZ);
+        glVertex3f(standX + standWidth, standY, standZ);
+        glVertex3f(standX + standWidth, standY + standHeight, standZ);
+        glVertex3f(standX, standY + standHeight, standZ);
+        // Left of stand
+        glNormal3f(-1.0f, 0.0f, 0.0f);
+        glVertex3f(standX, standY, standZ);
+        glVertex3f(standX, standY, standZ + standDepth);
+        glVertex3f(standX, standY + standHeight, standZ + standDepth);
+        glVertex3f(standX, standY + standHeight, standZ);
+        // Right of stand
+        glNormal3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(standX + standWidth, standY, standZ);
+        glVertex3f(standX + standWidth, standY, standZ + standDepth);
+        glVertex3f(standX + standWidth, standY + standHeight, standZ + standDepth);
+        glVertex3f(standX + standWidth, standY + standHeight, standZ);
+    glEnd();
+    
+    // Reset material properties
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glPopMatrix();
 }
 
 void kubus()
@@ -282,16 +410,14 @@ void gambarDindingKanan() {
 }
 
 void gambarBox() {
-    glPushMatrix();
+
     glDisable(GL_TEXTURE_2D);
 
     float xMin = -2.5f, xMax = 2.5f;   // width 6
     float yMin = 0.0f, yMax = 1.0f;    // height 1
     float zMin = 8.0f, zMax = 12.0f;   // depth 4
 
-    // Top face (DIFFERENT COLOR, e.g., RED)
-    glDisable(GL_LIGHTING);
-    glColor3f(1.0f, 0.0f, 0.0f); // Red
+    // Top face
     glBegin(GL_QUADS);
         glNormal3f(0, 1, 0);
         glVertex3f(xMin, yMax, zMin);
@@ -299,10 +425,6 @@ void gambarBox() {
         glVertex3f(xMax, yMax, zMax);
         glVertex3f(xMin, yMax, zMax);
     glEnd();
-    glEnable(GL_LIGHTING);
-
-    // Reset color for the other faces
-    glColor3f(0.7f, 0.5f, 0.2f); // Brownish color
 
     // Bottom face
     glBegin(GL_QUADS);
@@ -349,9 +471,9 @@ void gambarBox() {
         glVertex3f(xMax, yMax, zMin);
     glEnd();
 
-    glColor3f(1.0f, 1.0f, 1.0f); // Reset color
-    glPopMatrix();
 }
+
+
 
 
 
@@ -720,7 +842,7 @@ WinMain (HINSTANCE hInstance,
 	                glMaterialfv(GL_FRONT, GL_SPECULAR, bahan_specular3);
 	                glMaterialfv(GL_FRONT, GL_SHININESS, bahan_shininess3);
 	                glPushMatrix();
-	                    glTranslatef(2.0f, 0.0, 11.0f);
+	                    glTranslatef(2.0f, 0.0, 11.4f);
 	                    glScalef(0.5f, 0.5f, 0.5f);
 	                    glRotatef(yrot+20, 0.0f, 1.0f, 0.0f);
 	                    kubusTekstur();
@@ -785,10 +907,8 @@ WinMain (HINSTANCE hInstance,
 	            	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	            	glColor4f(0.2f, 0.2f, 0.4f, 0.8f);
 	            	gambarLantai();
-                    
 	            	glDisable(GL_BLEND);
 	            
-	            	// gambar bagian bawah lantai
 	            	glEnable(GL_CULL_FACE);
 	            	glFrontFace(GL_CW);  // pindah orientasi permukaan
 	            	glColor4f(0.1f, 0.1f, 0.7f, 1.0);
@@ -800,13 +920,35 @@ WinMain (HINSTANCE hInstance,
 
             	// gambar objek aslinya, tidak pantulannya
                glPushMatrix();
-                   glTranslatef(0.0f, 0.0f, 0.0f);
-                   gambarBox();
-               glPopMatrix();
+
+                    glLightfv(GL_LIGHT0, GL_POSITION, posisiCahaya);
+	            	glEnable(GL_BLEND);
+	            	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	            	glColor4f(0.7f, 0.5f, 0.2f, 0.0745f);
+	            	gambarBox();
+	            	glDisable(GL_BLEND);
+
+                    glEnable(GL_CULL_FACE);
+	            	glFrontFace(GL_CW);  // pindah orientasi permukaan
+	            	glColor4f(0.7f, 0.5f, 0.2f, 1.0f);
+	            	gambarLantai();
+                    gambarBox();
+	            	glFrontFace(GL_CCW);
+	            	glDisable(GL_CULL_FACE);
+					glDisable(GL_BLEND);
+
+                    glDisable(GL_BLEND);
+                glPopMatrix();
 
                glPushMatrix();
                     glTranslatef(0.0f, 0.0f, 1.0f);
                     gambarFrame();
+                glPopMatrix();
+
+                glPushMatrix();
+                    glTranslatef(-3.0f, 0.0f, 0.0f);
+                    glRotatef(-10, 0.0f, 1.0f, 0.0f);
+                    gambarTV();
                 glPopMatrix();
                 
 
